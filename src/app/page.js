@@ -1,69 +1,53 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import PostCard from "@/components/PostCard";
+import HeroSlider from "@/components/HeroSlider";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const posts = await prisma.post.findMany({
+    where: { status: "published" },
+    orderBy: { createdAt: "desc" },
+    include: {
+      category: true,
+    },
+  });
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.js</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div>
+      <HeroSlider />
+
+      <div className="container py-5">
+        <section id="posts">
+          <div className="d-flex align-items-center justify-content-between mb-4">
+            <h2 className="h4 fw-bold m-0">آخرین نوشته‌ها</h2>
+          </div>
+
+          <div className="row g-4">
+            {posts.length === 0 ? (
+              <div className="col-12 text-center py-5">
+                <p style={{ color: "var(--text-muted)" }}>
+                  هنوز پستی نوشته نشده.
+                </p>
+              </div>
+            ) : (
+              posts.map((post, index) => (
+                <div key={post.id} className="col-md-6 col-lg-4">
+                  <PostCard
+                    id={post.id}
+                    title={post.title}
+                    excerpt={post.excerpt}
+                    author={post.author}
+                    date={post.date}
+                    tag={post.tag}
+                    index={index}
+                    category={post.category}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      </div>
     </div>
-  );
-}
+  );}

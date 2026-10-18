@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int            @id @default(autoincrement())
+  name             String
+  email            String         @unique
+  password         String
+  role             String         @default("user")
+  avatar           String?
+  bio              String?
+  github           String?
+  twitter          String?
+  linkedin         String?
+  website          String?
+  createdAt        DateTime       @default(now())
+  posts            Post[]
+  requests         AuthorRequest[]
+  comments         Comment[]
+  sentMessages     Message[]      @relation("SentMessages")
+  receivedMessages Message[]      @relation("ReceivedMessages")
+  notifications    Notification[]
+  likes            Like[]
+  bookmarks        Bookmark[]
+  followers        Follow[]       @relation("UserFollowers")
+  following        Follow[]       @relation("UserFollowing")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  slug      String   @unique
+  color     String   @default("#7c5cff")
+  icon      String   @default("bi-folder")
+  createdAt DateTime @default(now())
+  posts     Post[]
+}
+
+model Post {
+  id         Int        @id @default(autoincrement())
+  title      String
+  excerpt    String
+  content    String
+  author     String     @default("ناشناس")
+  date       String
+  readTime   String     @default("۳ دقیقه")
+  tag        String     @default("bi-file-text")
+  status     String     @default("published")
+  aiScore    Int?
+  aiReason   String?
+  createdAt  DateTime   @default(now())
+  authorId   Int?
+  user       User?      @relation(fields: [authorId], references: [id])
+  comments   Comment[]
+  categoryId Int?
+  category   Category?  @relation(fields: [categoryId], references: [id])
+  likes      Like[]
+  bookmarks  Bookmark[]
+}
+
+model AuthorRequest {
+  id        Int      @id @default(autoincrement())
+  message   String
+  status    String   @default("pending")
+  adminNote String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  senderId   Int
+  receiverId Int
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+model Follow {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  followerId  Int
+  followingId Int
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id])
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+}
