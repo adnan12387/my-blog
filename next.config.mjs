@@ -4,6 +4,7 @@ const nextConfig = {
     '/api/**/*': ['./src/generated/prisma/**/*'],
     '/**/*': ['./src/generated/prisma/**/*'],
   },
+  turbopack: {},
 };
 
 export default nextConfig;
