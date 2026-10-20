@@ -2,20 +2,22 @@
   "name": "my-blog",
   "version": "0.1.0",
   "private": true,
-"scripts": {
-  "dev": "next dev",
-  "build": "prisma generate && next build --webpack",
-  "start": "next start",
-  "postinstall": "prisma generate"
-},
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build --webpack",
+    "start": "next start",
+    "postinstall": "prisma generate"
+  },
   "dependencies": {
     "@google/genai": "^2.30.0",
+    "@prisma/adapter-pg": "^7.10.1",
     "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "dotenv": "^18.0.4",
     "jose": "^6.2.12",
     "next": "16.3.7",
+    "pg": "^8.23.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
