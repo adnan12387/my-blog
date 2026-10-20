@@ -132,10 +132,7 @@ export default function UserMenu({ user }) {
                             ذخیره‌ها
                         </Link>
 
-                        <Link
-                        href="/feed"
-                        className="user-menu-item"
-                        nClick={() => setIsOpen(false)}>
+                        <Link href="/feed"className="user-menu-item"onClick={() => setIsOpen(false)}>
                         <i className="bi bi-rss"></i>
                         فید من
                         </Link>
